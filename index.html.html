@@ -1,0 +1,915 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>ORIENTA · UPVM</title>
+<style>
+:root{
+  --c1:#0B1E45;
+  --c2:#1A3A8F;
+  --accent:#3B82F6;
+  --purple:#6D5BD0;
+  --light:#EEF2FF;
+  --white:#FFFFFF;
+  --gray:#64748B;
+  --bg:#F0F4FA;
+  --red:#EF4444;
+  --green:#22C55E;
+  --yellow:#F59E0B;
+  --border:#E2E8F0;
+  /* Personalización */
+  --user-bg: #F0F4FA;
+  --user-sidebar: linear-gradient(195deg,#0B1E45 0%,#0d2155 100%);
+  --user-accent: #3B82F6;
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+html,body{height:100%;font-family:system-ui,-apple-system,"Segoe UI",sans-serif;background:var(--user-bg);color:#1E293B;}
+button{font-family:inherit;cursor:pointer;}
+input,select,textarea{font-family:inherit;}
+::-webkit-scrollbar{width:5px;}
+::-webkit-scrollbar-thumb{background:#CBD5E1;border-radius:5px;}
+
+.screen{display:none;}
+.screen.active{display:flex;}
+
+/* ── AUTH ── */
+#screenAuth{
+  min-height:100vh;
+  background:radial-gradient(circle at 18% 18%,var(--purple) 0%,transparent 38%),
+             linear-gradient(140deg,var(--c1) 0%,var(--c2) 55%,var(--accent) 100%);
+  align-items:center;justify-content:center;
+}
+.auth-card{
+  background:var(--white);border-radius:24px;padding:46px 42px;width:410px;
+  box-shadow:0 32px 80px rgba(11,30,69,.3);
+  animation:fadeUp .4s ease;
+}
+@keyframes fadeUp{from{opacity:0;transform:translateY(16px);}to{opacity:1;transform:translateY(0);}}
+.auth-brand{text-align:center;margin-bottom:28px;}
+.auth-logo{font-size:44px;display:block;margin-bottom:6px;}
+.auth-title{font-size:26px;font-weight:800;color:var(--c1);letter-spacing:.3px;}
+.auth-sub{font-size:12px;color:var(--gray);margin-top:3px;}
+.auth-tabs{display:flex;background:#F1F5F9;border-radius:12px;padding:4px;margin-bottom:26px;gap:4px;}
+.auth-tab{flex:1;padding:9px;border:none;border-radius:9px;font-size:13px;font-weight:600;color:var(--gray);background:transparent;transition:all .2s;}
+.auth-tab.on{background:var(--white);color:var(--c1);box-shadow:0 2px 8px rgba(0,0,0,.09);}
+.fld{margin-bottom:15px;}
+.lbl{display:block;font-size:11px;font-weight:700;color:var(--c1);margin-bottom:5px;text-transform:uppercase;letter-spacing:.6px;}
+.inp{width:100%;padding:11px 13px;border:1.5px solid var(--border);border-radius:11px;font-size:14px;background:#F8FAFC;transition:border .2s,box-shadow .2s;color:#1E293B;}
+.inp:focus{outline:none;border-color:var(--user-accent);box-shadow:0 0 0 3px rgba(59,130,246,.14);}
+.inp-2{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
+.sel{width:100%;padding:11px 38px 11px 13px;border:1.5px solid var(--border);border-radius:11px;font-size:14px;background:#F8FAFC url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='11' height='7'%3E%3Cpath d='M1 1l4.5 5L10 1' stroke='%2364748B' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E") no-repeat right 13px center;appearance:none;color:#1E293B;}
+.sel:focus{outline:none;border-color:var(--user-accent);box-shadow:0 0 0 3px rgba(59,130,246,.14);}
+.btn-p{width:100%;padding:13px;background:linear-gradient(135deg,var(--c1),var(--c2));color:#fff;border:none;border-radius:12px;font-size:15px;font-weight:700;letter-spacing:.3px;box-shadow:0 8px 20px rgba(26,58,143,.28);transition:transform .15s,box-shadow .15s;margin-top:2px;}
+.btn-p:hover{transform:translateY(-1px);box-shadow:0 12px 28px rgba(26,58,143,.36);}
+.btn-s{padding:10px 16px;border:1.5px solid var(--border);border-radius:10px;background:#fff;color:var(--c1);font-weight:600;font-size:13px;transition:border .15s;}
+.btn-s:hover{border-color:var(--user-accent);}
+.err{background:#FEE2E2;color:var(--red);border-radius:10px;padding:10px 14px;font-size:13px;margin-bottom:14px;}
+.step-bar{display:flex;align-items:center;gap:6px;margin-bottom:22px;}
+.sdot{width:26px;height:26px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;flex-shrink:0;}
+.sdot.done{background:var(--green);color:#fff;}
+.sdot.curr{background:var(--c1);color:#fff;}
+.sdot.pend{background:#E2E8F0;color:var(--gray);}
+.sline{flex:1;height:2px;background:#E2E8F0;}
+.sline.done{background:var(--green);}
+.cuatri-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:8px;margin:10px 0 14px;}
+.cuatri-btn{padding:10px 4px;border:1.5px solid var(--border);border-radius:10px;background:#fff;color:var(--c1);font-weight:700;font-size:13px;transition:all .15s;}
+.cuatri-btn:hover{border-color:var(--user-accent);color:var(--user-accent);}
+.cuatri-btn.on{background:var(--c1);color:#fff;border-color:var(--c1);}
+.mat-pick{display:flex;align-items:center;gap:10px;padding:10px 13px;border-radius:10px;border:1.5px solid var(--border);margin-bottom:7px;background:#fff;cursor:pointer;transition:all .15s;}
+.mat-pick:hover,.mat-pick.on{border-color:var(--c1);background:var(--light);}
+.mat-pick input[type=checkbox]{width:15px;height:15px;accent-color:var(--c1);flex-shrink:0;}
+.mat-pick-name{font-size:13px;font-weight:600;}
+.mat-pick-cr{font-size:12px;color:var(--gray);margin-left:auto;white-space:nowrap;}
+
+/* ── APP ── */
+#screenApp{flex-direction:row;min-height:100vh;}
+.sidebar{
+  width:235px;background:var(--user-sidebar);
+  min-height:100vh;display:flex;flex-direction:column;padding:0 0 22px;
+  position:fixed;left:0;top:0;bottom:0;z-index:100;
+  box-shadow:4px 0 24px rgba(0,0,0,.1);
+}
+.sb-brand{padding:24px 20px 18px;border-bottom:1px solid rgba(255,255,255,.08);}
+.sb-logo{font-size:28px;display:block;margin-bottom:4px;}
+.sb-title{color:#fff;font-weight:800;font-size:18px;letter-spacing:.3px;}
+.sb-sub{color:rgba(255,255,255,.38);font-size:11px;margin-top:2px;}
+.nav-list{list-style:none;padding:12px 10px;margin:0;flex:1;overflow-y:auto;}
+.nav-item{
+  display:flex;align-items:center;gap:10px;padding:10px 13px;border-radius:11px;
+  cursor:pointer;color:rgba(255,255,255,.58);font-weight:500;font-size:14px;margin-bottom:3px;
+  transition:all .17s;
+}
+.nav-item.on{color:#fff;background:rgba(255,255,255,.13);font-weight:700;border-left:3px solid var(--user-accent);}
+.nav-item:hover:not(.on){background:rgba(255,255,255,.07);color:#fff;}
+.nav-badge{margin-left:auto;background:var(--red);color:#fff;font-size:10px;font-weight:700;border-radius:20px;padding:2px 6px;min-width:18px;text-align:center;}
+.sb-user{margin:0 10px;padding:12px 13px;background:rgba(255,255,255,.07);border-radius:12px;display:flex;align-items:center;gap:10px;}
+.avatar{width:36px;height:36px;border-radius:50%;background:linear-gradient(135deg,var(--user-accent),var(--purple));display:flex;align-items:center;justify-content:center;color:#fff;font-weight:800;font-size:14px;flex-shrink:0;}
+.av-name{color:#fff;font-weight:700;font-size:13px;line-height:1.3;}
+.av-mat{color:rgba(255,255,255,.42);font-size:11px;}
+.av-out{background:none;border:none;color:rgba(255,255,255,.42);font-size:11px;cursor:pointer;padding:0;display:block;margin-top:1px;}
+.av-out:hover{color:rgba(255,255,255,.75);}
+
+.main{margin-left:235px;padding:34px 40px;min-height:100vh;width:100%;background:var(--user-bg);transition:background .3s;}
+.page{display:none;}
+.page.active{display:block;}
+.pg-title{font-size:25px;font-weight:800;color:var(--c1);margin-bottom:5px;}
+.pg-sub{color:var(--gray);font-size:13px;margin-bottom:26px;}
+
+.g3{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-bottom:22px;}
+.g2{display:grid;grid-template-columns:repeat(2,1fr);gap:16px;margin-bottom:22px;}
+.gd{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;}
+.card{background:var(--white);border-radius:16px;padding:20px 22px;box-shadow:0 2px 12px rgba(15,23,42,.06);border:1px solid #EEF1F6;}
+.card-t{font-size:14px;font-weight:700;color:var(--c1);margin-bottom:14px;}
+.stat-ic{font-size:24px;margin-bottom:8px;}
+.stat-n{font-size:34px;font-weight:900;line-height:1;margin-bottom:4px;}
+.stat-l{font-size:12px;color:var(--gray);}
+
+table{width:100%;border-collapse:collapse;}
+th{text-align:left;font-size:11px;font-weight:700;color:var(--gray);text-transform:uppercase;letter-spacing:.5px;padding:9px 13px;border-bottom:2px solid #EEF1F6;}
+td{padding:12px 13px;font-size:14px;border-bottom:1px solid #F4F6FB;vertical-align:middle;}
+tr:last-child td{border-bottom:none;}
+.cal-inp{width:68px;padding:6px 8px;border:1.5px solid var(--border);border-radius:8px;font-size:13px;font-weight:700;text-align:center;}
+.cal-inp:focus{outline:none;border-color:var(--user-accent);}
+
+.rem-item{display:flex;align-items:center;gap:11px;padding:11px 0;border-bottom:1px solid #F4F6FB;}
+.rem-item:last-child{border-bottom:none;}
+.rem-dot{width:9px;height:9px;border-radius:50%;flex-shrink:0;}
+.rem-del{background:none;border:none;cursor:pointer;color:var(--red);font-size:16px;padding:0 2px;opacity:.6;line-height:1;}
+.rem-del:hover{opacity:1;}
+.day-cls{background:var(--light);border-radius:9px;padding:9px 11px;margin-bottom:7px;font-size:12px;color:var(--c1);line-height:1.5;}
+.day-cls:last-child{margin-bottom:0;}
+
+/* CHAT */
+.chat-wrap{display:flex;flex-direction:column;height:450px;}
+.chat-msgs{flex:1;overflow-y:auto;display:flex;flex-direction:column;gap:12px;padding:4px 0;}
+.msg-u{align-self:flex-end;background:linear-gradient(135deg,var(--c1),var(--c2));color:#fff;border-radius:18px 18px 4px 18px;padding:11px 16px;max-width:66%;font-size:14px;line-height:1.5;}
+.msg-b{align-self:flex-start;background:#F1F5F9;color:#1E293B;border-radius:18px 18px 18px 4px;padding:11px 16px;max-width:66%;font-size:14px;line-height:1.5;}
+.chat-row{display:flex;gap:10px;margin-top:12px;align-items:center;}
+
+/* ── PERSONALIZACIÓN ── */
+.custom-panel{
+  position:fixed;right:-310px;top:0;bottom:0;width:310px;
+  background:var(--white);box-shadow:-4px 0 24px rgba(0,0,0,.12);
+  z-index:200;transition:right .3s ease;
+  display:flex;flex-direction:column;
+}
+.custom-panel.open{right:0;}
+.custom-head{padding:20px 22px 16px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;}
+.custom-head h2{font-size:16px;font-weight:800;color:var(--c1);}
+.close-btn{background:none;border:none;font-size:22px;cursor:pointer;color:var(--gray);line-height:1;}
+.custom-body{flex:1;overflow-y:auto;padding:20px 22px;}
+.custom-section{margin-bottom:24px;}
+.custom-section h3{font-size:12px;font-weight:700;color:var(--gray);text-transform:uppercase;letter-spacing:.6px;margin-bottom:12px;}
+.bg-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;}
+.bg-opt{border-radius:10px;height:52px;cursor:pointer;border:2.5px solid transparent;transition:all .15s;position:relative;overflow:hidden;}
+.bg-opt:hover{transform:scale(1.05);}
+.bg-opt.on{border-color:var(--c1);box-shadow:0 0 0 2px rgba(11,30,69,.25);}
+.bg-opt .bg-tick{display:none;position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);font-size:16px;}
+.bg-opt.on .bg-tick{display:block;}
+.color-row{display:flex;gap:8px;flex-wrap:wrap;}
+.color-dot{width:34px;height:34px;border-radius:50%;cursor:pointer;border:2.5px solid transparent;transition:all .15s;flex-shrink:0;}
+.color-dot:hover{transform:scale(1.1);}
+.color-dot.on{border-color:var(--c1);box-shadow:0 0 0 2px rgba(11,30,69,.2);}
+.custom-toggle-btn{
+  position:fixed;right:0;top:50%;transform:translateY(-50%);
+  background:var(--c1);color:#fff;border:none;border-radius:12px 0 0 12px;
+  padding:14px 10px;font-size:18px;z-index:201;cursor:pointer;
+  box-shadow:-2px 0 12px rgba(0,0,0,.15);writing-mode:vertical-rl;
+  font-size:11px;font-weight:700;letter-spacing:1px;gap:6px;
+  display:flex;align-items:center;
+}
+.overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.18);z-index:199;}
+.overlay.open{display:block;}
+
+.info-box{background:var(--light);border-radius:11px;padding:13px 15px;font-size:13px;color:var(--c1);margin-top:14px;}
+.cuatri-badge{display:inline-flex;align-items:center;gap:5px;background:linear-gradient(135deg,var(--c1),var(--c2));color:#fff;border-radius:20px;padding:4px 13px;font-size:12px;font-weight:700;margin-bottom:18px;}
+.contact-k{font-size:11px;font-weight:700;color:#94A3B8;text-transform:uppercase;letter-spacing:.5px;}
+.contact-v{font-size:14px;margin-top:2px;margin-bottom:13px;}
+</style>
+</head>
+<body>
+
+<!-- ══ AUTH ══ -->
+<div id="screenAuth" class="screen active">
+<div class="auth-card">
+  <div class="auth-brand">
+    <span class="auth-logo">🎓</span>
+    <div class="auth-title">ORIENTA</div>
+    <div class="auth-sub">Sistema Académico · UPVM</div>
+  </div>
+  <div class="auth-tabs">
+    <button class="auth-tab on" id="tLogin" onclick="switchTab('login')">Iniciar sesión</button>
+    <button class="auth-tab" id="tReg" onclick="switchTab('reg')">Nuevo alumno</button>
+  </div>
+
+  <!-- LOGIN -->
+  <div id="fLogin">
+    <div id="eLogin" class="err" style="display:none;"></div>
+    <div class="fld"><label class="lbl">Matrícula</label><input class="inp" id="lMat" placeholder="Ej. 2024001"/></div>
+    <div class="fld"><label class="lbl">Contraseña</label><input class="inp" id="lPass" type="password" placeholder="••••••••"/></div>
+    <button class="btn-p" onclick="doLogin()">Ingresar al sistema →</button>
+  </div>
+
+  <!-- REGISTER -->
+  <div id="fReg" style="display:none;">
+    <div class="step-bar" id="stepBar"></div>
+    <div id="eReg" class="err" style="display:none;"></div>
+    <!-- Step 1 -->
+    <div id="rs1">
+      <div class="inp-2">
+        <div class="fld"><label class="lbl">Nombre(s)</label><input class="inp" id="rN" placeholder="Juan"/></div>
+        <div class="fld"><label class="lbl">Apellidos</label><input class="inp" id="rA" placeholder="García López"/></div>
+      </div>
+      <div class="inp-2">
+        <div class="fld"><label class="lbl">Matrícula</label><input class="inp" id="rM" placeholder="2024001"/></div>
+        <div class="fld"><label class="lbl">Correo</label><input class="inp" id="rC" type="email" placeholder="2024001@upvm.edu.mx"/></div>
+      </div>
+      <div class="inp-2">
+        <div class="fld"><label class="lbl">Contraseña</label><input class="inp" id="rP" type="password" placeholder="Mín. 6 caracteres"/></div>
+        <div class="fld"><label class="lbl">Confirmar</label><input class="inp" id="rP2" type="password" placeholder="Repite contraseña"/></div>
+      </div>
+      <button class="btn-p" onclick="rNext(1)">Continuar →</button>
+    </div>
+    <!-- Step 2 -->
+    <div id="rs2" style="display:none;">
+      <div class="fld"><label class="lbl">Carrera</label>
+        <select class="sel" id="rCar">
+          <option value="">Selecciona tu carrera</option>
+          <option value="IDSOFT">Ing. en Desarrollo de Software</option>
+          <option value="IMEC">Ing. Mecatrónica</option>
+          <option value="IIND">Ing. Industrial</option>
+          <option value="LADMON">Lic. en Administración</option>
+          <option value="LCON">Lic. en Contaduría</option>
+        </select>
+      </div>
+      <div class="fld"><label class="lbl">Cuatrimestre actual</label>
+        <div class="cuatri-grid" id="cuatriGrid"></div>
+      </div>
+      <div style="display:flex;gap:10px;margin-top:4px;">
+        <button class="btn-s" onclick="rBack(2)">← Atrás</button>
+        <button class="btn-p" style="flex:1;" onclick="rNext(2)">Continuar →</button>
+      </div>
+    </div>
+    <!-- Step 3 -->
+    <div id="rs3" style="display:none;">
+      <p style="font-size:13px;color:var(--gray);margin-bottom:12px;">Selecciona las materias que cursas:</p>
+      <div id="matPicker" style="max-height:280px;overflow-y:auto;padding-right:2px;"></div>
+      <div style="display:flex;gap:10px;margin-top:12px;">
+        <button class="btn-s" onclick="rBack(3)">← Atrás</button>
+        <button class="btn-p" style="flex:1;" onclick="doRegister()">Crear cuenta ✓</button>
+      </div>
+    </div>
+  </div>
+</div>
+</div>
+
+<!-- ══ APP ══ -->
+<div id="screenApp" class="screen">
+  <aside class="sidebar">
+    <div class="sb-brand">
+      <span class="sb-logo">🎓</span>
+      <div class="sb-title">ORIENTA</div>
+      <div class="sb-sub">Sistema Académico UPVM</div>
+    </div>
+    <ul class="nav-list" id="navList"></ul>
+    <div class="sb-user">
+      <div class="avatar" id="sbAv">E</div>
+      <div>
+        <div class="av-name" id="sbName">Alumno</div>
+        <div class="av-mat" id="sbMat">Mat. ·····</div>
+        <button class="av-out" onclick="doLogout()">Cerrar sesión</button>
+      </div>
+    </div>
+  </aside>
+
+  <main class="main" id="mainArea">
+    <!-- DASHBOARD -->
+    <section class="page active" id="page-dashboard">
+      <h1 class="pg-title" id="dashTitle">Bienvenido 👋</h1>
+      <p class="pg-sub" id="dashSub"></p>
+      <div class="g3" id="statsRow"></div>
+      <div class="g2">
+        <div class="card"><div class="card-t" id="todayTitle">📅 Clases de hoy</div><div id="todayCls"></div></div>
+        <div class="card"><div class="card-t">🔔 Próximos recordatorios</div><div id="upRems"></div></div>
+      </div>
+    </section>
+
+    <!-- MATERIAS -->
+    <section class="page" id="page-materias">
+      <h1 class="pg-title">Mis Materias</h1>
+      <div id="matSub" style="margin-bottom:20px;"></div>
+      <div class="card">
+        <table><thead><tr><th>Materia</th><th>Créditos</th><th>Horario</th><th>Salón</th><th>Maestro</th><th>Calificación</th></tr></thead>
+        <tbody id="matBody"></tbody></table>
+      </div>
+    </section>
+
+    <!-- HORARIO -->
+    <section class="page" id="page-horario">
+      <h1 class="pg-title">Horario Semanal</h1>
+      <p class="pg-sub" id="horSub"></p>
+      <div class="gd" id="horGrid"></div>
+    </section>
+
+    <!-- RECORDATORIOS -->
+    <section class="page" id="page-recordatorios">
+      <h1 class="pg-title">Recordatorios</h1>
+      <p class="pg-sub">Gestiona tus tareas y fechas importantes</p>
+      <div class="card">
+        <div style="display:flex;gap:10px;margin-bottom:18px;">
+          <input class="inp" id="rTxt" style="margin:0;flex:1;" placeholder="Nuevo recordatorio…"/>
+          <input class="inp" id="rFecha" style="margin:0;width:130px;" placeholder="Fecha / día"/>
+          <button class="btn-p" onclick="addRem()" style="width:auto;padding:11px 18px;border-radius:11px;font-size:14px;">+ Agregar</button>
+        </div>
+        <div id="remList"></div>
+      </div>
+    </section>
+
+    <!-- IA -->
+    <section class="page" id="page-ia">
+      <h1 class="pg-title">Consultas Académicas</h1>
+      <p class="pg-sub">Resuelve dudas sobre materias, calificaciones y orientación escolar</p>
+      <div class="card">
+        <div class="chat-wrap">
+          <div class="chat-msgs" id="chatMsgs"></div>
+          <div class="chat-row">
+            <input class="inp" id="chatInp" style="margin:0;flex:1;" placeholder="Escribe tu pregunta…"/>
+            <button class="btn-p" onclick="sendChat()" style="width:auto;padding:11px 18px;border-radius:11px;font-size:14px;">Enviar →</button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- CONTACTO -->
+    <section class="page" id="page-contacto">
+      <h1 class="pg-title">Contacto</h1>
+      <p class="pg-sub">Información institucional y soporte técnico</p>
+      <div class="g2">
+        <div class="card"><div class="card-t">🏫 Universidad Politécnica del Valle de México</div><div id="cInfo"></div></div>
+        <div class="card">
+          <div class="card-t">⏰ Horarios de atención</div>
+          <div id="cHours"></div>
+          <div class="info-box">Para soporte técnico de ORIENTA, contacta al área de Sistemas Escolares o escribe a soporte@upvm.edu.mx</div>
+        </div>
+      </div>
+    </section>
+  </main>
+</div>
+
+<!-- ══ PERSONALIZACIÓN ══ -->
+<button class="custom-toggle-btn" id="customBtn" onclick="togglePanel()" style="display:none;">
+  🎨 TEMA
+</button>
+<div class="overlay" id="overlay" onclick="togglePanel()"></div>
+<div class="custom-panel" id="customPanel">
+  <div class="custom-head">
+    <h2>🎨 Personalizar tema</h2>
+    <button class="close-btn" onclick="togglePanel()">×</button>
+  </div>
+  <div class="custom-body">
+
+    <div class="custom-section">
+      <h3>Fondo del sistema</h3>
+      <div class="bg-grid" id="bgGrid"></div>
+    </div>
+
+    <div class="custom-section">
+      <h3>Color de acento</h3>
+      <div class="color-row" id="accentGrid"></div>
+    </div>
+
+    <div class="custom-section">
+      <h3>Color de barra lateral</h3>
+      <div class="color-row" id="sidebarGrid"></div>
+    </div>
+
+    <div class="custom-section">
+      <h3>Vista previa</h3>
+      <div style="background:var(--user-bg);border-radius:10px;padding:14px;border:1px solid var(--border);">
+        <div style="background:var(--user-sidebar);border-radius:8px;height:40px;margin-bottom:8px;display:flex;align-items:center;padding:0 12px;">
+          <span style="color:#fff;font-size:12px;font-weight:700;">🎓 ORIENTA</span>
+        </div>
+        <div style="background:#fff;border-radius:8px;height:32px;border:1.5px solid var(--border);display:flex;align-items:center;padding:0 10px;gap:8px;">
+          <div style="width:10px;height:10px;border-radius:50%;background:var(--user-accent);"></div>
+          <span style="font-size:12px;color:#64748B;">Vista previa del tema</span>
+        </div>
+      </div>
+    </div>
+
+    <button class="btn-p" onclick="resetTheme()" style="margin-top:4px;background:linear-gradient(135deg,#64748B,#475569);">
+      Restablecer predeterminado
+    </button>
+  </div>
+</div>
+
+<script>
+// ═══════════════════════════════════════
+//  CATÁLOGO UPVM
+// ═══════════════════════════════════════
+const CAT = {
+  IDSOFT:{n:"Ing. en Desarrollo de Software",q:{
+    1:[{n:"Fundamentos de Programación",c:6},{n:"Matemáticas para Computación I",c:6},{n:"Taller de Ética",c:4},{n:"Inglés I",c:4},{n:"Introducción a Ing. en Software",c:4}],
+    2:[{n:"Programación Orientada a Objetos",c:6},{n:"Matemáticas para Computación II",c:6},{n:"Estructura de Datos",c:6},{n:"Taller de Liderazgo",c:4},{n:"Inglés II",c:4}],
+    3:[{n:"Desarrollo Web I",c:6},{n:"Bases de Datos I",c:6},{n:"Sistemas Operativos",c:6},{n:"Inglés III",c:4},{n:"Taller de Investigación I",c:4}],
+    4:[{n:"Desarrollo Web II",c:6},{n:"Bases de Datos II",c:6},{n:"Redes de Computadoras",c:6},{n:"Inglés IV",c:4},{n:"Taller de Investigación II",c:4}],
+    5:[{n:"Programación Móvil",c:6},{n:"Arquitectura de Software",c:6},{n:"Seguridad Informática",c:6},{n:"Gestión de Proyectos de Software",c:6},{n:"Inglés Técnico V",c:4}],
+    6:[{n:"Aplicaciones Móviles Avanzadas",c:6},{n:"Inteligencia Artificial",c:6},{n:"Cómputo en la Nube",c:6},{n:"Estadística Aplicada",c:4},{n:"Inglés Técnico VI",c:4}],
+    7:[{n:"Minería de Datos",c:6},{n:"Microservicios y APIs",c:6},{n:"Calidad de Software",c:6},{n:"Emprendimiento Tecnológico",c:4},{n:"Inglés Técnico VII",c:4}],
+    8:[{n:"Big Data",c:6},{n:"DevOps e Integración Continua",c:6},{n:"Diseño UX/UI",c:4},{n:"Criptografía Aplicada",c:6},{n:"Inglés Técnico VIII",c:4}],
+    9:[{n:"Proyecto Integrador I",c:8},{n:"Blockchain y Tecnologías Emergentes",c:6},{n:"Aprendizaje Automático",c:6},{n:"Auditoría de Sistemas",c:4}],
+    10:[{n:"Residencia Profesional",c:10},{n:"Seminario de Titulación",c:4},{n:"Tópicos Selectos de Software",c:6}],
+  }},
+  IMEC:{n:"Ing. Mecatrónica",q:{
+    1:[{n:"Fundamentos de Electrónica",c:6},{n:"Matemáticas I",c:6},{n:"Taller de Ética",c:4},{n:"Inglés I",c:4},{n:"Dibujo Técnico",c:4}],
+    2:[{n:"Circuitos Eléctricos",c:6},{n:"Matemáticas II",c:6},{n:"Inglés II",c:4},{n:"Mecánica Clásica",c:6},{n:"Materiales de Ingeniería",c:4}],
+    3:[{n:"Microcontroladores",c:6},{n:"Matemáticas III",c:6},{n:"Inglés III",c:4},{n:"Hidráulica y Neumática",c:6},{n:"Resistencia de Materiales",c:6}],
+    4:[{n:"Robótica I",c:6},{n:"Control Automático",c:6},{n:"Inglés IV",c:4},{n:"Programación CNC",c:6},{n:"Termodinámica",c:6}],
+    5:[{n:"Robótica II",c:6},{n:"Visión Artificial",c:6},{n:"Inglés V",c:4},{n:"Automatización Industrial",c:6},{n:"Diseño Mecánico",c:6}],
+    6:[{n:"Manufactura Flexible",c:6},{n:"Sistemas Embebidos",c:6},{n:"Inglés VI",c:4},{n:"Gestión de Proyectos",c:6},{n:"Mantenimiento Industrial",c:4}],
+    7:[{n:"IoT Industrial",c:6},{n:"Diseño de Máquinas",c:6},{n:"Inglés VII",c:4},{n:"Control Avanzado",c:6},{n:"Seguridad Industrial",c:4}],
+    8:[{n:"Proyecto Integrador I",c:8},{n:"Calidad y Normas ISO",c:6},{n:"Inglés VIII",c:4},{n:"Manufactura Aditiva",c:4}],
+    9:[{n:"Proyecto Integrador II",c:8},{n:"Sistemas de Manufactura",c:6},{n:"Seminario",c:4},{n:"Tópicos Selectos",c:4}],
+    10:[{n:"Residencia Profesional",c:10},{n:"Titulación",c:4}],
+  }},
+  IIND:{n:"Ing. Industrial",q:{
+    1:[{n:"Fundamentos de Ing. Industrial",c:6},{n:"Matemáticas I",c:6},{n:"Inglés I",c:4},{n:"Taller de Ética",c:4},{n:"Dibujo Industrial",c:4}],
+    2:[{n:"Procesos de Manufactura",c:6},{n:"Matemáticas II",c:6},{n:"Inglés II",c:4},{n:"Estadística I",c:6},{n:"Economía",c:4}],
+    3:[{n:"Logística y Cadena de Suministro",c:6},{n:"Estadística II",c:6},{n:"Inglés III",c:4},{n:"Control de Calidad",c:6},{n:"Costos Industriales",c:4}],
+    4:[{n:"Ergonomía",c:4},{n:"Simulación de Sistemas",c:6},{n:"Investigación de Operaciones",c:6},{n:"Inglés IV",c:4},{n:"Gestión Ambiental",c:4}],
+    5:[{n:"Gestión de Proyectos",c:6},{n:"Lean Manufacturing",c:6},{n:"Inglés V",c:4},{n:"Planeación de la Producción",c:6},{n:"Seguridad Industrial",c:4}],
+    6:[{n:"Automatización de Procesos",c:6},{n:"Diseño de Plantas",c:6},{n:"Inglés VI",c:4},{n:"Finanzas Industriales",c:4},{n:"Six Sigma",c:6}],
+    7:[{n:"Dirección de Operaciones",c:6},{n:"Normativa ISO",c:4},{n:"Inglés VII",c:4},{n:"Supply Chain Avanzada",c:6},{n:"RSE",c:4}],
+    8:[{n:"Proyecto Integrador I",c:8},{n:"Auditoría de Calidad",c:6},{n:"Inglés VIII",c:4}],
+    9:[{n:"Proyecto Integrador II",c:8},{n:"Seminario",c:4},{n:"Tópicos Selectos",c:4}],
+    10:[{n:"Residencia Profesional",c:10},{n:"Titulación",c:4}],
+  }},
+  LADMON:{n:"Lic. en Administración",q:{
+    1:[{n:"Fundamentos de Administración",c:6},{n:"Matemáticas Financieras",c:6},{n:"Inglés I",c:4},{n:"Taller de Ética",c:4},{n:"Contabilidad Básica",c:4}],
+    2:[{n:"Microeconomía",c:6},{n:"Estadística Descriptiva",c:6},{n:"Inglés II",c:4},{n:"Derecho Mercantil",c:4},{n:"Sistemas de Información",c:4}],
+    3:[{n:"Administración de RH",c:6},{n:"Macroeconomía",c:6},{n:"Inglés III",c:4},{n:"Contabilidad Intermedia",c:6},{n:"Estadística Inferencial",c:4}],
+    4:[{n:"Finanzas Corporativas",c:6},{n:"Mercadotecnia",c:6},{n:"Inglés IV",c:4},{n:"Derecho Laboral",c:4},{n:"Gestión de la Calidad",c:4}],
+    5:[{n:"Gestión Estratégica",c:6},{n:"Comercio Internacional",c:6},{n:"Inglés V",c:4},{n:"Dirección de Ventas",c:4},{n:"Investigación de Mercados",c:6}],
+    6:[{n:"Planeación Financiera",c:6},{n:"Liderazgo Organizacional",c:4},{n:"Inglés VI",c:4},{n:"E-commerce",c:4},{n:"Evaluación de Proyectos",c:6}],
+    7:[{n:"Administración de Proyectos",c:6},{n:"RSE",c:4},{n:"Inglés VII",c:4},{n:"Negocios Internacionales",c:6},{n:"Innovación Empresarial",c:4}],
+    8:[{n:"Proyecto Integrador I",c:8},{n:"Auditoría Administrativa",c:6},{n:"Inglés VIII",c:4}],
+    9:[{n:"Proyecto Integrador II",c:8},{n:"Seminario de Titulación",c:4},{n:"Tópicos Selectos",c:4}],
+    10:[{n:"Residencia Profesional",c:10},{n:"Titulación",c:4}],
+  }},
+  LCON:{n:"Lic. en Contaduría",q:{
+    1:[{n:"Contabilidad Financiera I",c:6},{n:"Matemáticas Financieras",c:6},{n:"Inglés I",c:4},{n:"Taller de Ética",c:4},{n:"Derecho Civil",c:4}],
+    2:[{n:"Contabilidad Financiera II",c:6},{n:"Estadística Básica",c:4},{n:"Inglés II",c:4},{n:"Derecho Fiscal I",c:6},{n:"Costos I",c:6}],
+    3:[{n:"Costos y Presupuestos",c:6},{n:"Derecho Fiscal II",c:6},{n:"Inglés III",c:4},{n:"Auditoría I",c:6},{n:"Finanzas",c:6}],
+    4:[{n:"Finanzas Corporativas",c:6},{n:"Auditoría II",c:6},{n:"Inglés IV",c:4},{n:"Normas de Información Financiera",c:6},{n:"Contabilidad Gubernamental I",c:4}],
+    5:[{n:"Contabilidad Gubernamental II",c:4},{n:"Impuestos Federales",c:6},{n:"Inglés V",c:4},{n:"Análisis Financiero",c:6},{n:"Contraloría",c:6}],
+    6:[{n:"Planeación Fiscal",c:6},{n:"Contabilidad Internacional",c:4},{n:"Inglés VI",c:4},{n:"Control Interno",c:6},{n:"Costos Avanzados",c:4}],
+    7:[{n:"Auditoría Fiscal",c:6},{n:"Dictaminación",c:6},{n:"Inglés VII",c:4},{n:"Ética Profesional",c:4},{n:"IMSS e INFONAVIT",c:4}],
+    8:[{n:"Proyecto Integrador I",c:8},{n:"Normatividad Contable",c:6},{n:"Inglés VIII",c:4}],
+    9:[{n:"Proyecto Integrador II",c:8},{n:"Seminario de Titulación",c:4},{n:"Tópicos Selectos",c:4}],
+    10:[{n:"Residencia Profesional",c:10},{n:"Titulación",c:4}],
+  }},
+};
+const SLOTS=[
+  {dias:"Lun/Mié",hora:"07:00-09:00"},{dias:"Mar/Jue",hora:"07:00-09:00"},
+  {dias:"Lun/Mié",hora:"09:00-11:00"},{dias:"Mar/Jue",hora:"09:00-11:00"},
+  {dias:"Vie",hora:"07:00-10:00"},{dias:"Lun/Mié",hora:"11:00-13:00"},
+  {dias:"Mar/Jue",hora:"11:00-13:00"},{dias:"Vie",hora:"10:00-13:00"},
+];
+const SALONES=["A-101","A-201","B-105","B-202","C-301","Lab-1","Lab-2","Lab-3","Lab-4"];
+const MAESTROS=["Dr. García","Ing. López","Mtra. Torres","Dr. Ramírez","Lic. Ruiz","M.C. Hernández","Ing. Morales","Dra. Sánchez","M.I. Flores","Mtro. Cruz"];
+const DIAS_FULL=["Lunes","Martes","Miércoles","Jueves","Viernes","Sábado"];
+const CUATRI_NOM=["Primero","Segundo","Tercero","Cuarto","Quinto","Sexto","Séptimo","Octavo","Noveno","Décimo"];
+const RCOLS=["#3B82F6","#22C55E","#F59E0B","#EF4444","#6D5BD0","#0891B2"];
+
+// ═══ TEMA ═══
+const BG_OPTS = [
+  {id:"b1",label:"Azul claro",v:"#F0F4FA"},
+  {id:"b2",label:"Blanco",v:"#F8FAFC"},
+  {id:"b3",label:"Gris",v:"#EAEEF4"},
+  {id:"b4",label:"Lavanda",v:"#F3F0FF"},
+  {id:"b5",label:"Menta",v:"#F0FDF4"},
+  {id:"b6",label:"Crema",v:"#FEFCE8"},
+  {id:"b7",label:"Rosa claro",v:"#FFF0F6"},
+  {id:"b8",label:"Oscuro",v:"#0F172A"},
+];
+const ACCENT_OPTS=[
+  {v:"#3B82F6",n:"Azul"},{v:"#6D5BD0",n:"Morado"},{v:"#22C55E",n:"Verde"},
+  {v:"#F59E0B",n:"Ámbar"},{v:"#EF4444",n:"Rojo"},{v:"#0891B2",n:"Cian"},
+  {v:"#EC4899",n:"Rosa"},{v:"#64748B",n:"Gris"},
+];
+const SIDEBAR_OPTS=[
+  {v:"linear-gradient(195deg,#0B1E45 0%,#0d2155 100%)",n:"Azul marino"},
+  {v:"linear-gradient(195deg,#1a1a2e 0%,#16213e 100%)",n:"Noche"},
+  {v:"linear-gradient(195deg,#1B4332 0%,#2D6A4F 100%)",n:"Verde bosque"},
+  {v:"linear-gradient(195deg,#3D0B6E 0%,#5A1F9E 100%)",n:"Morado oscuro"},
+  {v:"linear-gradient(195deg,#1A1A1A 0%,#2D2D2D 100%)",n:"Carbón"},
+  {v:"linear-gradient(195deg,#7C2D12 0%,#B45309 100%)",n:"Café"},
+];
+
+let theme = JSON.parse(localStorage.getItem("orienta_theme")||JSON.stringify({bg:"#F0F4FA",accent:"#3B82F6",sidebar:"linear-gradient(195deg,#0B1E45 0%,#0d2155 100%)"}));
+applyTheme();
+
+function applyTheme(){
+  const r = document.documentElement.style;
+  r.setProperty("--user-bg", theme.bg);
+  r.setProperty("--user-accent", theme.accent);
+  r.setProperty("--user-sidebar", theme.sidebar);
+  // Dark mode text adjust
+  const isDark = theme.bg === "#0F172A";
+  r.setProperty("color-scheme", isDark ? "dark" : "light");
+  if(isDark){
+    r.setProperty("--c1","#E2E8F0");
+    r.setProperty("color","#E2E8F0");
+  } else {
+    r.setProperty("--c1","#0B1E45");
+  }
+  localStorage.setItem("orienta_theme", JSON.stringify(theme));
+}
+
+function renderThemePanel(){
+  // BG
+  document.getElementById("bgGrid").innerHTML = BG_OPTS.map(o=>`
+    <div class="bg-opt${theme.bg===o.v?" on":""}" style="background:${o.v};border:1.5px solid #E2E8F0;" onclick="setThemeBg('${o.v}')" title="${o.label}">
+      <span class="bg-tick">✓</span>
+    </div>
+  `).join("");
+  // Accent
+  document.getElementById("accentGrid").innerHTML = ACCENT_OPTS.map(o=>`
+    <div class="color-dot${theme.accent===o.v?" on":""}" style="background:${o.v};" onclick="setThemeAccent('${o.v}')" title="${o.n}"></div>
+  `).join("");
+  // Sidebar
+  document.getElementById("sidebarGrid").innerHTML = SIDEBAR_OPTS.map(o=>`
+    <div class="color-dot${theme.sidebar===o.v?" on":""}" style="background:${o.v};" onclick="setThemeSidebar(\`${o.v}\`)" title="${o.n}"></div>
+  `).join("");
+}
+
+function setThemeBg(v){ theme.bg=v; applyTheme(); renderThemePanel(); }
+function setThemeAccent(v){ theme.accent=v; applyTheme(); renderThemePanel(); }
+function setThemeSidebar(v){ theme.sidebar=v; applyTheme(); renderThemePanel(); }
+function resetTheme(){ theme={bg:"#F0F4FA",accent:"#3B82F6",sidebar:"linear-gradient(195deg,#0B1E45 0%,#0d2155 100%)"}; applyTheme(); renderThemePanel(); }
+function togglePanel(){
+  const p=document.getElementById("customPanel");
+  const ov=document.getElementById("overlay");
+  p.classList.toggle("open");
+  ov.classList.toggle("open");
+  if(p.classList.contains("open")) renderThemePanel();
+}
+
+// ═══ DATA ═══
+let users = JSON.parse(localStorage.getItem("orienta_users")||"{}");
+let cu = null, rems = [], chatH = [], rSt = 1, rCuatri = 0;
+
+function saveUsers(){ localStorage.setItem("orienta_users", JSON.stringify(users)); }
+function esc(s){ return String(s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c])); }
+
+// ═══ AUTH ═══
+function switchTab(t){
+  document.getElementById("fLogin").style.display=t==="login"?"block":"none";
+  document.getElementById("fReg").style.display=t==="reg"?"block":"none";
+  document.getElementById("tLogin").classList.toggle("on",t==="login");
+  document.getElementById("tReg").classList.toggle("on",t==="reg");
+  if(t==="reg"){ rSt=1; rCuatri=0; renderSteps(); showStep(1); renderCuatriG(); }
+}
+
+function doLogin(){
+  const m=document.getElementById("lMat").value.trim();
+  const p=document.getElementById("lPass").value.trim();
+  const e=document.getElementById("eLogin");
+  if(!m){e.style.display="block";e.textContent="⚠️ Ingresa tu matrícula.";return;}
+  if(!p){e.style.display="block";e.textContent="⚠️ Ingresa tu contraseña.";return;}
+  if(!users[m]){e.style.display="block";e.textContent="⚠️ Matrícula no registrada. Crea una cuenta primero.";return;}
+  if(users[m].pass!==p){e.style.display="block";e.textContent="⚠️ Contraseña incorrecta.";return;}
+  e.style.display="none";
+  startSession(m);
+}
+
+function renderSteps(){
+  const labels=["Datos","Carrera","Materias"];
+  document.getElementById("stepBar").innerHTML=labels.map((l,i)=>{
+    const n=i+1,cls=n<rSt?"done":n===rSt?"curr":"pend";
+    return `<div class="sdot ${cls}">${n<rSt?"✓":n}</div>${i<2?`<div class="sline${n<rSt?" done":""}"></div>`:""}`;
+  }).join("");
+}
+
+function showStep(n){ [1,2,3].forEach(i=>document.getElementById("rs"+i).style.display=i===n?"block":"none"); }
+
+function renderCuatriG(){
+  document.getElementById("cuatriGrid").innerHTML=Array.from({length:10},(_,i)=>`
+    <button class="cuatri-btn${rCuatri===i+1?" on":""}" onclick="selQ(${i+1})">${i+1}°</button>
+  `).join("");
+}
+
+function selQ(n){ rCuatri=n; renderCuatriG(); }
+
+function rNext(step){
+  const e=document.getElementById("eReg"); e.style.display="none";
+  if(step===1){
+    const n=document.getElementById("rN").value.trim(),a=document.getElementById("rA").value.trim();
+    const m=document.getElementById("rM").value.trim(),c=document.getElementById("rC").value.trim();
+    const p=document.getElementById("rP").value.trim(),p2=document.getElementById("rP2").value.trim();
+    if(!n||!a||!m||!c||!p||!p2){e.style.display="block";e.textContent="⚠️ Completa todos los campos.";return;}
+    if(p!==p2){e.style.display="block";e.textContent="⚠️ Las contraseñas no coinciden.";return;}
+    if(p.length<6){e.style.display="block";e.textContent="⚠️ Contraseña mínimo 6 caracteres.";return;}
+    if(users[m]){e.style.display="block";e.textContent="⚠️ Esa matrícula ya tiene cuenta.";return;}
+    rSt=2; renderSteps(); showStep(2);
+  } else if(step===2){
+    const car=document.getElementById("rCar").value;
+    if(!car){e.style.display="block";e.textContent="⚠️ Selecciona tu carrera.";return;}
+    if(!rCuatri){e.style.display="block";e.textContent="⚠️ Selecciona tu cuatrimestre.";return;}
+    renderMatPicker(car,rCuatri);
+    rSt=3; renderSteps(); showStep(3);
+  }
+}
+
+function rBack(s){ rSt=s-1; renderSteps(); showStep(rSt); }
+
+function renderMatPicker(car,q){
+  const mats=(CAT[car]?.q?.[q])||[];
+  document.getElementById("matPicker").innerHTML=mats.map((m,i)=>`
+    <label class="mat-pick on" id="mpl${i}" onclick="toggleMp(${i},this)">
+      <input type="checkbox" id="mp${i}" checked onclick="event.stopPropagation()"/>
+      <span class="mat-pick-name">${esc(m.n)}</span>
+      <span class="mat-pick-cr">${m.c} créditos</span>
+    </label>
+  `).join("");
+}
+
+function toggleMp(i,lbl){
+  const cb=document.getElementById("mp"+i); cb.checked=!cb.checked;
+  lbl.classList.toggle("on",cb.checked);
+}
+
+function doRegister(){
+  const e=document.getElementById("eReg");
+  const n=document.getElementById("rN").value.trim(),a=document.getElementById("rA").value.trim();
+  const m=document.getElementById("rM").value.trim(),c=document.getElementById("rC").value.trim();
+  const p=document.getElementById("rP").value.trim();
+  const car=document.getElementById("rCar").value, q=rCuatri;
+  const allMats=(CAT[car]?.q?.[q])||[];
+  const sel=allMats.filter((_,i)=>document.getElementById("mp"+i)?.checked);
+  if(sel.length===0){e.style.display="block";e.textContent="⚠️ Selecciona al menos una materia.";return;}
+  const matsInfo=sel.map((mat,i)=>({
+    nombre:mat.n, creditos:mat.c,
+    horario:SLOTS[i%SLOTS.length].dias+" "+SLOTS[i%SLOTS.length].hora,
+    diasArr:SLOTS[i%SLOTS.length].dias,
+    horaStr:SLOTS[i%SLOTS.length].hora,
+    salon:SALONES[i%SALONES.length],
+    maestro:MAESTROS[i%MAESTROS.length],
+    calificacion:null,
+  }));
+  users[m]={
+    nombre:n+" "+a, mat:m, correo:c, pass:p,
+    carrera:car, cuatri:q, materias:matsInfo,
+    reminders:[
+      {id:1,texto:"Revisar programa de materias",fecha:"Esta semana",color:"#3B82F6",done:false},
+      {id:2,texto:"Entregar primera actividad",fecha:"Próximo lunes",color:"#F59E0B",done:false},
+    ]
+  };
+  saveUsers();
+  startSession(m);
+}
+
+// ═══ SESSION ═══
+function startSession(mat){
+  cu=JSON.parse(JSON.stringify(users[mat]));
+  rems=cu.reminders||[];
+  chatH=[{from:"bot",text:`Bienvenido, ${cu.nombre.split(" ")[0]}. Soy el asistente académico de ORIENTA. ¿En qué puedo ayudarte hoy?`}];
+
+  document.getElementById("screenAuth").classList.remove("active");
+  document.getElementById("screenApp").classList.add("active");
+  document.getElementById("customBtn").style.display="flex";
+
+  document.getElementById("sbAv").textContent=cu.nombre[0].toUpperCase();
+  document.getElementById("sbName").textContent=cu.nombre;
+  document.getElementById("sbMat").textContent="Mat. "+cu.mat;
+
+  renderNav(); navigate("dashboard"); renderAll();
+}
+
+function doLogout(){
+  if(cu){ users[cu.mat].reminders=rems; saveUsers(); }
+  cu=null;
+  document.getElementById("screenApp").classList.remove("active");
+  document.getElementById("screenAuth").classList.add("active");
+  document.getElementById("customBtn").style.display="none";
+  document.getElementById("lMat").value="";
+  document.getElementById("lPass").value="";
+  switchTab("login");
+}
+
+// ═══ NAV ═══
+const NAV=[
+  {id:"dashboard",ic:"🏠",lb:"Inicio"},
+  {id:"materias",ic:"📚",lb:"Materias"},
+  {id:"horario",ic:"📅",lb:"Horario"},
+  {id:"recordatorios",ic:"🔔",lb:"Recordatorios",badge:true},
+  {id:"ia",ic:"💬",lb:"Consultas Académicas"},
+  {id:"contacto",ic:"📞",lb:"Contacto"},
+];
+
+function renderNav(){
+  document.getElementById("navList").innerHTML=NAV.map(n=>`
+    <li class="nav-item" data-page="${n.id}">
+      <span>${n.ic}</span> ${n.lb}
+      ${n.badge?`<span class="nav-badge" id="navBadge">${rems.filter(r=>!r.done).length||""}</span>`:""}
+    </li>
+  `).join("");
+  document.querySelectorAll(".nav-item").forEach(el=>el.addEventListener("click",()=>navigate(el.dataset.page)));
+}
+
+function navigate(pid){
+  document.querySelectorAll(".page").forEach(p=>p.classList.remove("active"));
+  document.getElementById("page-"+pid).classList.add("active");
+  document.querySelectorAll(".nav-item").forEach(n=>n.classList.toggle("on",n.dataset.page===pid));
+}
+
+function renderAll(){ rDash(); rMaterias(); rHorario(); rReminders(); rChat(); rContacto(); }
+
+// ═══ DASHBOARD ═══
+function rDash(){
+  const qn=CUATRI_NOM[cu.cuatri-1]||cu.cuatri+"°";
+  document.getElementById("dashTitle").textContent="Bienvenido, "+cu.nombre.split(" ")[0]+" 👋";
+  document.getElementById("dashSub").textContent=`Matrícula ${cu.mat} · ${qn} cuatrimestre · ${CAT[cu.carrera]?.n||cu.carrera}`;
+  const mats=cu.materias||[];
+  const conCal=mats.filter(m=>m.calificacion!==null);
+  const prom=conCal.length?(conCal.reduce((a,m)=>a+m.calificacion,0)/conCal.length).toFixed(1):"—";
+  const pend=rems.filter(r=>!r.done).length;
+  document.getElementById("statsRow").innerHTML=`
+    <div class="card"><div class="stat-ic">📊</div><div class="stat-n" style="color:var(--user-accent);">${prom}</div><div class="stat-l">Promedio general</div></div>
+    <div class="card"><div class="stat-ic">📚</div><div class="stat-n" style="color:#22C55E;">${mats.length}</div><div class="stat-l">Materias activas</div></div>
+    <div class="card"><div class="stat-ic">🔔</div><div class="stat-n" style="color:#F59E0B;">${pend}</div><div class="stat-l">Recordatorios pendientes</div></div>
+  `;
+  const hoy=["Domingo","Lunes","Martes","Miércoles","Jueves","Viernes","Sábado"][new Date().getDay()];
+  document.getElementById("todayTitle").textContent=`📅 Clases de hoy — ${hoy}`;
+  const ch=mats.filter(m=>m.diasArr&&m.diasArr.split("/").some(d=>hoy.startsWith(d.trim())));
+  document.getElementById("todayCls").innerHTML=ch.length
+    ?ch.map(m=>`<div class="rem-item"><div class="rem-dot" style="background:var(--user-accent);"></div><span style="font-size:13px;">${esc(m.nombre)} · ${esc(m.horaStr)} · ${esc(m.salon)}</span></div>`).join("")
+    :`<p style="color:#94A3B8;font-size:13px;padding:4px 0;">Sin clases hoy 🎉</p>`;
+  document.getElementById("upRems").innerHTML=rems.slice(0,3).map(r=>`
+    <div class="rem-item">
+      <div class="rem-dot" style="background:${r.color};"></div>
+      <span style="font-size:13px;flex:1;${r.done?"text-decoration:line-through;color:#94A3B8;":""}">${esc(r.texto)}</span>
+      <span style="font-size:11px;color:#94A3B8;">${esc(r.fecha)}</span>
+    </div>
+  `).join()||`<p style="color:#94A3B8;font-size:13px;">Sin recordatorios pendientes</p>`;
+}
+
+// ═══ MATERIAS ═══
+function rMaterias(){
+  const qn=CUATRI_NOM[cu.cuatri-1]||cu.cuatri+"°";
+  document.getElementById("matSub").innerHTML=`<span class="cuatri-badge">🎓 ${qn} Cuatrimestre · ${CAT[cu.carrera]?.n||cu.carrera}</span>`;
+  document.getElementById("matBody").innerHTML=(cu.materias||[]).map((m,i)=>{
+    const cal=m.calificacion;
+    const col=cal===null?"#94A3B8":cal>=9?"#22C55E":cal>=8?"#3B82F6":cal>=7?"#F59E0B":"#EF4444";
+    return `<tr>
+      <td style="font-weight:600;">${esc(m.nombre)}</td>
+      <td>${m.creditos}</td>
+      <td style="font-size:12px;color:#64748B;">${esc(m.horario)}</td>
+      <td>${esc(m.salon)}</td>
+      <td style="font-size:13px;">${esc(m.maestro)}</td>
+      <td><input class="cal-inp" type="number" min="0" max="10" step="0.1" value="${cal!==null?cal:""}" placeholder="—" onchange="updCal(${i},this.value)" style="color:${col};"/></td>
+    </tr>`;
+  }).join("");
+}
+
+function updCal(idx,val){
+  const v=parseFloat(val);
+  if(isNaN(v)||v<0||v>10) return;
+  cu.materias[idx].calificacion=Math.round(v*10)/10;
+  users[cu.mat].materias[idx].calificacion=cu.materias[idx].calificacion;
+  saveUsers(); rDash(); rMaterias();
+}
+
+// ═══ HORARIO ═══
+function rHorario(){
+  const qn=CUATRI_NOM[cu.cuatri-1]||cu.cuatri+"°";
+  document.getElementById("horSub").textContent=`${qn} cuatrimestre · ${CAT[cu.carrera]?.n||cu.carrera}`;
+  document.getElementById("horGrid").innerHTML=DIAS_FULL.map(dia=>{
+    const cls=(cu.materias||[]).filter(m=>m.diasArr&&m.diasArr.split("/").some(d=>dia.startsWith(d.trim())));
+    return `<div class="card"><div class="card-t" style="font-size:13px;">${dia}</div>${
+      cls.length
+        ?cls.map(m=>`<div class="day-cls"><strong>${esc(m.nombre)}</strong><br>${esc(m.horaStr)} · ${esc(m.salon)}<br><span style="color:#94A3B8;font-size:11px;">${esc(m.maestro)}</span></div>`).join("")
+        :`<p style="color:#94A3B8;font-size:13px;">Sin clases</p>`
+    }</div>`;
+  }).join("");
+}
+
+// ═══ RECORDATORIOS ═══
+function rReminders(){
+  const badge=document.getElementById("navBadge");
+  if(badge) badge.textContent=rems.filter(r=>!r.done).length||"";
+  const list=document.getElementById("remList");
+  if(!list) return;
+  list.innerHTML=rems.length===0
+    ?`<p style="color:#94A3B8;text-align:center;padding:24px 0;">Sin recordatorios. ¡Agrega uno!</p>`
+    :rems.map(r=>`
+      <div class="rem-item">
+        <input type="checkbox" data-id="${r.id}" class="rchk" ${r.done?"checked":""} style="width:15px;height:15px;cursor:pointer;accent-color:var(--c1);flex-shrink:0;"/>
+        <div class="rem-dot" style="background:${r.color};"></div>
+        <div style="flex:1;">
+          <div style="font-size:14px;${r.done?"text-decoration:line-through;color:#94A3B8;":""}">${esc(r.texto)}</div>
+          <div style="font-size:11px;color:#94A3B8;margin-top:2px;">${esc(r.fecha)}</div>
+        </div>
+        <button class="rem-del rdel" data-id="${r.id}">✕</button>
+      </div>
+    `).join("");
+  list.querySelectorAll(".rchk").forEach(el=>el.addEventListener("change",()=>togRem(+el.dataset.id)));
+  list.querySelectorAll(".rdel").forEach(el=>el.addEventListener("click",()=>delRem(+el.dataset.id)));
+}
+
+function addRem(){
+  const t=document.getElementById("rTxt").value.trim();
+  const f=document.getElementById("rFecha").value.trim()||"Pendiente";
+  if(!t) return;
+  rems.push({id:Date.now(),texto:t,fecha:f,color:RCOLS[rems.length%RCOLS.length],done:false});
+  document.getElementById("rTxt").value="";
+  document.getElementById("rFecha").value="";
+  saveRems(); rReminders(); rDash();
+}
+function togRem(id){ rems=rems.map(r=>r.id===id?{...r,done:!r.done}:r); saveRems(); rReminders(); rDash(); }
+function delRem(id){ rems=rems.filter(r=>r.id!==id); saveRems(); rReminders(); rDash(); }
+function saveRems(){ if(cu){ users[cu.mat].reminders=rems; saveUsers(); } }
+
+// ═══ CONSULTAS (IA) ═══
+function buildCtx(){
+  const mats=cu.materias||[];
+  const conCal=mats.filter(m=>m.calificacion!==null);
+  const prom=conCal.length?(conCal.reduce((a,m)=>a+m.calificacion,0)/conCal.length).toFixed(1):"sin calificaciones registradas";
+  const listaM=mats.map(m=>`${m.nombre} (calificación: ${m.calificacion!==null?m.calificacion:"sin registrar"}, horario: ${m.horario}, salón: ${m.salon})`).join("; ");
+  const pendRems=rems.filter(r=>!r.done).map(r=>r.texto).join(", ");
+  const qn=CUATRI_NOM[cu.cuatri-1]||cu.cuatri+"°";
+  return `Eres el asistente académico del sistema ORIENTA de la Universidad Politécnica del Valle de México (UPVM). Responde siempre en español, de forma clara y profesional. No te presentes como "IA" ni como modelo de lenguaje; eres el asistente de ORIENTA.
+
+Información del alumno:
+- Nombre: ${cu.nombre}
+- Matrícula: ${cu.mat}
+- Carrera: ${CAT[cu.carrera]?.n||cu.carrera}
+- Cuatrimestre: ${qn}
+- Promedio actual: ${prom}
+- Materias y calificaciones: ${listaM||"sin materias registradas"}
+- Recordatorios pendientes: ${pendRems||"ninguno"}
+
+Responde preguntas sobre materias, calificaciones, horarios, consejos de estudio y orientación escolar usando los datos reales del alumno. Sé conciso y profesional (máximo 3 oraciones). Si no sabes algo, dilo con honestidad.`;
+}
+
+async function sendChat(){
+  const inp=document.getElementById("chatInp");
+  const val=inp.value.trim();
+  if(!val) return;
+  inp.value="";
+  chatH.push({from:"user",text:val});
+  chatH.push({from:"bot",text:"Consultando...",typing:true});
+  rChat();
+  try{
+    const msgs=chatH.filter(m=>!m.typing).map(m=>({role:m.from==="user"?"user":"assistant",content:m.text}));
+    const res=await fetch("https://api.anthropic.com/v1/messages",{
+      method:"POST",
+      headers:{"Content-Type":"application/json"},
+      body:JSON.stringify({model:"claude-sonnet-4-6",max_tokens:1000,system:buildCtx(),messages:msgs})
+    });
+    const d=await res.json();
+    const reply=d.content?.[0]?.text||"No se pudo obtener respuesta. Intenta de nuevo.";
+    chatH=chatH.filter(m=>!m.typing);
+    chatH.push({from:"bot",text:reply});
+  }catch{
+    chatH=chatH.filter(m=>!m.typing);
+    chatH.push({from:"bot",text:"Sin conexión al servicio de consultas. Intenta más tarde."});
+  }
+  rChat();
+}
+
+function rChat(){
+  const box=document.getElementById("chatMsgs");
+  if(!box) return;
+  box.innerHTML=chatH.map(m=>`<div class="${m.from==="user"?"msg-u":"msg-b"}">${esc(m.text)}</div>`).join("");
+  box.scrollTop=box.scrollHeight;
+}
+
+// ═══ CONTACTO ═══
+function rContacto(){
+  document.getElementById("cInfo").innerHTML=[
+    ["Responsable","Jorge Salvador Hernández"],
+    ["Proyecto","ORIENTA — Sistema Académico"],
+    ["Institución","UPVM · Ecatepec, Estado de México"],
+    ["Correo","soporte@upvm.edu.mx"],
+    ["Teléfono","55 1234 5678"],
+    ["Sitio web","www.upvm.edu.mx"],
+  ].map(([k,v])=>`<div class="contact-k">${k}</div><div class="contact-v">${esc(v)}</div>`).join("");
+  document.getElementById("cHours").innerHTML=[
+    ["Lunes a Viernes","08:00 – 17:00"],
+    ["Sábado","09:00 – 13:00"],
+    ["Domingo","Cerrado"],
+  ].map(([d,h])=>`<div class="rem-item"><div style="flex:1;font-size:14px;">${d}</div><span style="font-size:13px;font-weight:700;color:var(--user-accent);">${h}</span></div>`).join("");
+}
+
+// ═══ TECLADO ═══
+document.addEventListener("keydown",e=>{
+  if(e.key!=="Enter") return;
+  const a=document.activeElement?.id;
+  if(a==="lMat"||a==="lPass") doLogin();
+  if(a==="chatInp") sendChat();
+  if(a==="rTxt"||a==="rFecha") addRem();
+});
+</script>
+</body>
+</html>
