@@ -1,4 +1,4 @@
-name: Build APK
+name: Build APK con Capacitor
 on: [push, workflow_dispatch]
 jobs:
   build:
@@ -15,22 +15,27 @@ jobs:
         uses: actions/setup-java@v3
         with:
           distribution: 'zulu'
-          java-version: '11'
+          java-version: '17'
 
-      - name: Install Cordova
-        run: npm install -g cordova
-
-      - name: Create App Bundle
+      - name: Instalar Dependencias y Generar App
         run: |
-          cordova create myapp com.upvm.orienta Orienta
-          rm -rf myapp/www/*
-          cp index.html myapp/www/
-          cd myapp
-          cordova platform add android
-          cordova build android --no-telemetry
+          mkdir www
+          cp index.html www/
+          npm init -y
+          npm install @capacitor/core @capacitor/cli
+          npx cap init OrientaApp com.upvm.orienta --web-dir=www
+          npm install @capacitor/android
+          npx cap add android
+          npx cap sync
+          
+      - name: Compilar APK (Gradle)
+        run: |
+          cd android
+          chmod +x gradlew
+          ./gradlew assembleDebug
 
-      - name: Upload APK
+      - name: Subir APK Terminado
         uses: actions/upload-artifact@v3
         with:
-          name: App-APK
-          path: myapp/platforms/android/app/build/outputs/apk/debug/app-debug.apk
+          name: App-Capacitor-APK
+          path: android/app/build/outputs/apk/debug/app-debug.apk
